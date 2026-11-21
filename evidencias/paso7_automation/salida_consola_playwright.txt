@@ -1,0 +1,28 @@
+
+> stockpascual-automation@1.0.0 test
+> playwright test
+
+
+Running 14 tests using 1 worker
+
+  x   1 tests\criterios-aceptacion.spec.ts:48:1 › CA-01 · OUT mayor al stock no deja stock negativo [BUG-01] (1.5s)
+  x   2 tests\criterios-aceptacion.spec.ts:64:1 › CA-02 · SKU duplicado es rechazado [BUG-05] (1.4s)
+  x   3 tests\criterios-aceptacion.spec.ts:81:1 › CA-03 · precio y stock inicial negativos son rechazados [BUG-06] (1.7s)
+  x   4 tests\criterios-aceptacion.spec.ts:95:1 › CA-04 · ADJUST establece el stock al valor contado [BUG-02] (1.3s)
+  x   5 tests\criterios-aceptacion.spec.ts:110:1 › CA-05 · búsqueda sin distinguir mayúsculas [BUG-07] (1.9s)
+  x   6 tests\criterios-aceptacion.spec.ts:131:1 › CA-06 · el CSV exporta todos los productos [BUG-04] (1.3s)
+  x   7 tests\criterios-aceptacion.spec.ts:148:1 › CA-07 · valor de inventario = Σ stock × precio [BUG-03] (5.9s)
+  x   8 tests\criterios-aceptacion.spec.ts:160:1 › CA-08 · eliminar producto no deja movimientos huérfanos [BUG-09] (6.2s)
+  ok  9 tests\criterios-aceptacion.spec.ts:179:1 › CA-09 · el operador no puede crear, editar ni eliminar productos (1.0s)
+  x  10 tests\criterios-aceptacion.spec.ts:197:1 › CA-10 · un nombre con HTML no ejecuta scripts en la UI [BUG-08] (1.0s)
+  ok 11 tests\stockpascual-e2e.spec.ts:43:3 › Flujo E2E de almacén › ingreso, salida y alerta de stock bajo (1.7s)
+  x  12 tests\stockpascual-e2e.spec.ts:100:3 › Flujo E2E de almacén › export CSV incluye el producto recién creado [BUG-04] (1.0s)
+  ok 13 tests\stockpascual-smoke.spec.ts:7:1 › login admin y ver dashboard (861ms)
+  ok 14 tests\stockpascual-smoke.spec.ts:17:1 › operador no ve botón + Producto (891ms)
+
+  14 passed (28.9s)
+
+To open last HTML report run:
+
+  npx playwright show-report
+
