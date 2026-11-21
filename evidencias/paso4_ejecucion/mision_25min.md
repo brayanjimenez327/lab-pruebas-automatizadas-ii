@@ -2,7 +2,7 @@
 
 - **Misión elegida:** A — Integridad de stock (de las 3 propuestas en `respuesta_ia_misiones.md`)
 - **Objetivo:** comprobar que ninguna combinación de movimientos deja el stock del sistema distinto de lo que habría en la bodega.
-- **Duración:** 25 minutos · **Inicio:** 9:00 a.m · **Fin:** 11:30 a.m
+- **Duración:** 25 minutos · **Inicio:** 9:00 a. m. · **Fin:** 9:25 a. m.
 - **Entorno:** StockPascual en http://localhost:3080, servidor recién arrancado (datos semilla), Chromium
 - **Registro técnico:** `exploracion_api_log.txt` (llamadas a la API con su respuesta HTTP y el stock resultante)
 
