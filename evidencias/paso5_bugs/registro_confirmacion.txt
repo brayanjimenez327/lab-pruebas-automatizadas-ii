@@ -1,0 +1,18 @@
+Corrida: 2026-11-21T19:08:54.788Z  ·  http://localhost:3080
+
+PASO 1: recorrido admin y operador capturado.
+BUG-03: dashboard muestra "$ 6.841"; Σ stock×precio = 6.841.200 COP.
+BUG-04: pantalla 5 productos; CSV 3 filas. Faltan: MON-24-04, AUD-BT-05.
+BUG-07: "Mouse"→1 fila(s), "mouse"→0, "MOUSE"→0, "mou-wl-02"→0.
+BUG-01: MON-24-04 stock 3, OUT 10 → stock -7. Sin mensaje de error.
+BUG-02: TEC-MEC-03 stock 22, ADJUST 20 → stock 42 (esperado 20).
+BUG-05: tras crear otro producto con SKU CAB-USB-01, la búsqueda devuelve 2 filas con ese SKU.
+BUG-06: NEG-TEST-01 creado con precio -5000 y stock -10. Modal sin error.
+BUG-12: productos con SKU vacío en el sistema: 1.
+BUG-11: Audífonos editado a SKU MOU-WL-02 y precio -99000; búsqueda MOU-WL-02 → 2 filas.
+BUG-10: fila "CAB-USB-01,Cable USB-C 1m, trenzado,Accesorios,18900,40,10,A-01" → 8 columnas; encabezado tiene 7.
+BUG-09: tras eliminar MON-24-04, Movimientos muestra 1 fila(s) "(producto eliminado)" con SKU "—"; dashboard sigue contando 4 movimientos.
+BUG-14: MUL-DIG-07 creado con stock 25; filas en Movimientos para ese SKU: 0.
+BUG-08: subtítulo cambiado por el script → "XSS ejecutado - token: 1b1e5fd935af644648440d7589a3fda1..."; payload alert(1) abrió 1 diálogo(s): alert: 1
+BUG-13: /api/me con token tras logout → HTTP 200; movimiento con token viejo → HTTP 201.
+BUG-18: POST /api/products {sku: NP-01, name: "Sin precio"} → HTTP 201, price=null; el dashboard muestra Valor inventario "$ 0".

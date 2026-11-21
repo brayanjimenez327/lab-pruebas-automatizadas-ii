@@ -1,0 +1,9 @@
+1) Login admin en la UI y lectura de localStorage.sp_token
+   token = 1b1e5fd935af644648440d7589a3fda1
+2) Clic en 'Cerrar sesión' (la UI vuelve al login)
+3) GET /api/me con el token anterior
+   HTTP 200  {"user":{"id":1,"username":"admin","role":"admin","name":"Ana Admin"}}
+4) POST /api/movements (OUT 1 de p1) con el token anterior
+   HTTP 201  {"movement":{"id":"mae7f403d","productId":"p1","type":"OUT","quantity":1,"reason":"Token tras logout","user":"admin","createdAt":"2026-11-21T19:08:54.220Z"},"pr
+
+Esperado: 401 No autenticado en ambos casos (sesión invalidada en el servidor).

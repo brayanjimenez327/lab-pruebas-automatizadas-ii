@@ -1,0 +1,73 @@
+﻿Bug_ID,Titulo,Severidad,Prioridad,Modulo,Pasos_reproduccion,Resultado_esperado,Resultado_actual,Datos_usados,Evidencia,Sugerido_por_IA,Confirmado_en_app,Notas
+BUG-01,La salida OUT mayor al stock deja el stock en negativo,Critica,P0,Movimientos,"1. Login admin
+2. Clic en + Movimiento
+3. Producto MON-24-04 (stock 3), Tipo Salida (OUT), Cantidad 10, Motivo ""Entrega laboratorio de redes""
+4. Registrar
+5. Ir a Productos y buscar MON-24-04",El sistema rechaza la salida con un mensaje y el stock sigue en 3,Se registra sin error y el stock queda en -7 (estado Agotado),SKU=MON-24-04 stock=3 OUT=10,evidencias/paso5_bugs/bug01a_formulario_out_10.png; evidencias/paso5_bugs/bug01b_stock_negativo.png,Sí,Sí,"Rompe el criterio 1. Con stock 0 también deja sacar (OUT 1 → -1, ver exploracion_api_log.txt)."
+BUG-02,ADJUST suma la cantidad en vez de fijar el stock al conteo físico,Critica,P0,Movimientos,"1. Login admin
+2. + Movimiento
+3. Producto TEC-MEC-03 (stock 22), Tipo Ajuste (ADJUST), Cantidad 20, Motivo ""Conteo físico noviembre""
+4. Registrar
+5. Buscar TEC-MEC-03 en Productos",Stock = 20 (valor contado),Stock = 42 (22 + 20),SKU=TEC-MEC-03 stock=22 ADJUST=20,evidencias/paso5_bugs/bug02a_formulario_adjust_20.png; evidencias/paso5_bugs/bug02b_adjust_suma.png,Sí,Sí,Rompe el criterio 4. Cada conteo físico agranda la diferencia en vez de corregirla.
+BUG-03,El valor de inventario del dashboard está dividido entre 1000,Critica,P0,Dashboard,"1. Arrancar el servidor (semilla intacta)
+2. Login admin
+3. Leer la tarjeta Valor inventario
+4. Calcular Σ stock × precio con la tabla de Productos",$ 6.841.200 (40×18.900 + 8×45.900 + 22×189.000 + 3×520.000 + 0×99.000),$ 6.841,Datos semilla,evidencias/paso5_bugs/bug03_valor_inventario.png,Sí,Sí,Rompe el criterio 7. Es la cifra que la administración usa para decidir.
+BUG-04,El CSV exportado omite los dos últimos productos,Alta,P0,Exportacion,"1. Login admin con la semilla (5 productos en pantalla)
+2. Clic en Exportar CSV
+3. Abrir inventario.csv y contar filas",5 filas de datos (todos los productos),3 filas: faltan MON-24-04 y AUD-BT-05. Siempre faltan los 2 últimos (también el producto recién creado en el E2E),Semilla,evidencias/paso5_bugs/bug04a_productos_en_pantalla.png; evidencias/paso5_bugs/bug04b_csv_descargado.png; evidencias/paso5_bugs/bug04_inventario_exportado.csv,Sí,Sí,Rompe el criterio 6. Un auditor no ve el faltante porque el archivo no lo indica.
+BUG-05,Se pueden crear dos productos con el mismo SKU,Alta,P1,Productos,"1. Login admin
+2. + Producto con SKU CAB-USB-01 (ya existe), nombre ""Cable USB-C 2m"", precio 24900, stock 15, mín 5, ubicación A-02
+3. Guardar
+4. Buscar CAB-USB-01","Error ""SKU ya existe""; no se crea",Se crea; la búsqueda muestra 2 filas con CAB-USB-01,SKU=CAB-USB-01,evidencias/paso5_bugs/bug05_sku_duplicado.png,Sí,Sí,Rompe el criterio 2. En el selector de movimientos ambos se ven iguales salvo el nombre.
+BUG-06,Se aceptan precio y stock inicial negativos,Alta,P1,Productos,"1. Login admin
+2. + Producto: SKU NEG-TEST-01, precio -5000, stock inicial -10
+3. Guardar
+4. Buscar NEG-TEST-01",Error de validación; no se crea,Se crea con precio $ -5.000 y stock -10 sin ningún mensaje,SKU=NEG-TEST-01 price=-5000 stock=-10,evidencias/paso5_bugs/bug06a_formulario_negativos.png; evidencias/paso5_bugs/bug06b_producto_negativo_creado.png,Sí,Sí,Rompe el criterio 3. Un precio negativo resta del valor total del inventario.
+BUG-07,La búsqueda distingue mayúsculas y minúsculas,Media,P1,Productos,"1. Login admin → Productos
+2. Buscar ""Mouse"" → 1 fila
+3. Buscar ""mouse""
+4. Buscar ""MOUSE""
+5. Buscar ""mou-wl-02""",Las 4 búsquedas devuelven MOU-WL-02,"""mouse"", ""MOUSE"" y ""mou-wl-02"" muestran ""Sin resultados""",mouse / Mouse / MOUSE / mou-wl-02,evidencias/paso5_bugs/bug07a_busqueda_Mouse.png; evidencias/paso5_bugs/bug07b_busqueda_mouse.png,Sí,Sí,Rompe el criterio 5.
+BUG-08,XSS almacenado: el nombre del producto se ejecuta como HTML en el selector de movimientos,Critica,P0,Seguridad,"1. Login admin
+2. + Producto: SKU XSS-01, nombre <img src=x onerror=""document.querySelector('#view-subtitle').textContent='XSS ejecutado - token: '+localStorage.getItem('sp_token')"">
+3. Guardar
+4. Observar el subtítulo de la vista y abrir + Movimiento
+5. Repetir con nombre <img src=x onerror=alert(1)>",El nombre se muestra como texto y no se ejecuta nada,"El código se ejecuta al guardar (y en cada recarga de datos): el subtítulo muestra el token de sesión; con alert(1) aparece el diálogo ""1"".",Payloads indicados en los pasos,evidencias/paso5_bugs/bug08a_xss_ejecutado_tras_guardar.png; evidencias/paso5_bugs/bug08b_xss_modal_movimientos.png,Parcial,Sí,Rompe el criterio 10. El listado de Productos sí escapa; el fallo está en fillProductSelect (innerHTML sin escape). Por el código (refreshAll → fillProductSelect) también se ejecuta en la sesión del operador. Probado en Chromium 157.
+BUG-09,Eliminar un producto deja sus movimientos huérfanos,Media,P1,Productos / Movimientos,"1. Login admin
+2. Registrar OUT sobre MON-24-04 (BUG-01)
+3. Productos → Eliminar MON-24-04 → Aceptar
+4. Ir a Movimientos y al Dashboard","No se permite borrar un producto con historial, o el historial conserva SKU y nombre","La fila queda como ""(producto eliminado)"" con SKU ""—""; el dashboard sigue contando el movimiento",SKU=MON-24-04,evidencias/paso5_bugs/bug09_movimientos_huerfanos.png,Sí,Sí,Rompe el criterio 8: ya no se sabe qué producto salió.
+BUG-10,El CSV no escapa comas: una coma en el nombre desplaza las columnas,Media,P1,Exportacion,"1. Login admin
+2. Editar CAB-USB-01 → nombre ""Cable USB-C 1m, trenzado"" → Guardar
+3. Exportar CSV
+4. Abrir en Excel",La fila conserva 7 columnas (nombre entre comillas),"La fila de CAB-USB-01 tiene 8 columnas: ""trenzado"" queda como categoría y todo se corre","name=""Cable USB-C 1m, trenzado""",evidencias/paso5_bugs/bug10_csv_sin_escape.png; evidencias/paso5_bugs/bug10_inventario_coma.csv,Parcial,Sí,"El nombre semilla Monitor 24"" IPS también trae comillas sin escapar."
+BUG-11,La edición de producto no valida SKU duplicado ni precio negativo,Alta,P1,Productos,"1. Login admin
+2. Productos → Editar AUD-BT-05
+3. SKU MOU-WL-02 (ya existe), precio -99000
+4. Guardar
+5. Buscar MOU-WL-02",Error de validación; el producto no cambia,Se guarda: 2 productos con SKU MOU-WL-02 y Audífonos con precio $ -99.000,"AUD-BT-05 → SKU MOU-WL-02, price -99000",evidencias/paso5_bugs/bug11a_edicion_sku_y_precio.png; evidencias/paso5_bugs/bug11b_edicion_guardada.png,No,Sí,"Aunque se corrija la creación (BUG-05/06), la edición es otra puerta abierta. Por API también acepta nombre vacío."
+BUG-12,Se puede crear un producto sin SKU,Media,P2,Productos,"1. Login admin
+2. + Producto con SKU vacío, nombre ""Pinza de punta (sin SKU)"", precio 32000, stock 6
+3. Guardar
+4. Buscar ""Pinza""",Error: SKU obligatorio,Se crea con la celda SKU vacía,"SKU=""""",evidencias/paso5_bugs/bug12_sku_vacio.png,No,Sí,"RF-02/03: el SKU identifica el producto. Varios productos sin SKU ""comparten"" el mismo SKU vacío."
+BUG-13,El token sigue funcionando después de cerrar sesión,Media,P2,Autenticacion,"1. Login admin y copiar localStorage.sp_token
+2. Clic en Cerrar sesión
+3. GET /api/me con Authorization: Bearer <token>
+4. POST /api/movements (OUT 1 de p1) con el mismo token",HTTP 401 en ambos: la sesión se invalida en el servidor,HTTP 200 en /api/me y HTTP 201 en el movimiento,Token de la sesión cerrada,evidencias/paso5_bugs/bug13_token_tras_logout.png; evidencias/paso5_bugs/bug13_token_tras_logout.txt,No,Sí,"Cerrar sesión solo borra el localStorage. Combinado con BUG-08, un token robado nunca expira."
+BUG-14,El stock inicial no queda respaldado por ningún movimiento,Baja,P2,Productos / Movimientos,"1. Login admin
+2. + Producto MUL-DIG-07 ""Multímetro digital"", precio 75000, stock 25, mín 5
+3. Guardar
+4. Ir a Movimientos","Existe un movimiento IN 25 (""Stock inicial"") que explica el saldo",No hay ninguna fila para MUL-DIG-07: el stock 25 no se puede rastrear,SKU=MUL-DIG-07 stock=25,evidencias/paso5_bugs/bug14_stock_inicial_sin_movimiento.png,No,Sí,A validar con el PO (RF-02 no lo exige). La semilla tiene el mismo problema: solo CAB-USB-01 cuadra con sus movimientos.
+BUG-15,"El historial de movimientos muestra el nombre actual del producto, no el del momento",Media,P2,Movimientos,"1. Login admin
+2. Editar CAB-USB-01: nombre ""Cable USB-C 1m, trenzado""
+3. Ir a Movimientos y ver los registros del 1/3/2026 y 5/3/2026","Los movimientos antiguos conservan ""Cable USB-C 1m""","Los movimientos de marzo aparecen como ""Cable USB-C 1m, trenzado""",CAB-USB-01,evidencias/paso5_bugs/bug09_movimientos_huerfanos.png (filas del 1/3 y 5/3),No,Sí,"El historial no es inmutable: renombrar o reasignar un SKU (BUG-11) cambia lo que ""salió"" en el pasado."
+BUG-16,ADJUST no permite registrar un conteo físico de 0,Media,P2,Movimientos,"1. Login admin
+2. + Movimiento sobre CAB-USB-01, Tipo ADJUST, Cantidad 0
+3. Registrar (en la UI el campo tiene min=1; por API: POST /api/movements {type: ADJUST, quantity: 0})",Se acepta: el conteo físico dio 0 unidades y el stock queda en 0,"HTTP 400 ""Cantidad debe ser mayor a 0""; la UI tampoco deja enviar 0",ADJUST quantity=0,evidencias/paso4_ejecucion/exploracion_api_log.txt,No,Sí,Al corregir BUG-02 hay que permitir 0 solo para ADJUST.
+BUG-17,Se aceptan cantidades decimales en productos por unidad,Baja,P2,Movimientos,"1. Token admin
+2. POST /api/movements {productId: p1, type: IN, quantity: 2.5}
+3. GET /api/products/p1",HTTP 400 para unidades enteras,HTTP 201 y el stock queda en 42.5 und,quantity=2.5,evidencias/paso4_ejecucion/exploracion_api_log.txt,No,Sí,"La UI usa step=1 y lo evita; la API no valida. El tipo en minúscula (""in"") también se acepta, lo cual es razonable."
+BUG-18,Un producto sin precio (creado por API) deja el valor del inventario en $ 0,Alta,P1,Dashboard,"1. Token admin
+2. POST /api/products {sku: NP-01, name: ""Sin precio""} → HTTP 201 con price null
+3. Login admin en la UI y ver el Dashboard","Precio obligatorio (HTTP 400), o el producto no rompe el total",El producto se crea con precio NaN y la tarjeta Valor inventario muestra $ 0 para todo el inventario,"{sku: NP-01, name: Sin precio}",evidencias/paso5_bugs/bug18_valor_inventario_en_cero.png; evidencias/paso4_ejecucion/exploracion_api_log.txt,No,Sí,"Desde la UI un precio vacío se envía como 0, así que solo se reproduce por API. Causa: el alta solo valida el nombre."
