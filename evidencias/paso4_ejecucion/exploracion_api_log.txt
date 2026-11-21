@@ -1,0 +1,21 @@
+Exploración por API (misión A) — servidor recién arrancado, 2026-11-21T11:31:54-05:00
+Script: llamadas fetch con token admin / operador a http://localhost:3080
+
+p4 (MON-24-04, stock 3): OUT 3 → HTTP 201  stock=0
+p4: OUT 1 → HTTP 201  stock=-1
+p1 (CAB-USB-01, 40): OUT 0 → HTTP 400 Cantidad debe ser mayor a 0 stock=40
+p1: OUT -1 → HTTP 400 Cantidad debe ser mayor a 0 stock=40
+p1: IN 2.5 → HTTP 201  stock=42.5
+p1: IN "abc" → HTTP 400 Cantidad debe ser mayor a 0 stock=42.5
+p1: ADJUST 0 → HTTP 400 Cantidad debe ser mayor a 0 stock=42.5
+p1: in 1 → HTTP 201  stock=43.5
+p1: TRANSFER 1 → HTTP 400 Tipo inválido. Use IN, OUT o ADJUST stock=43.5
+p2 operador ADJUST 5: ADJUST 5 → HTTP 201  stock=13
+sin token GET /api/products → HTTP 401
+producto inexistente OUT → HTTP 404
+operador export CSV → HTTP 200
+POST producto sin precio (API) → null
+dashboard: {"totalProducts":6,"lowStock":4,"outOfStock":3,"inventoryValue":null,"recentMovements":7}
+
+Verificación adicional (BUG-11), 2026-11-21T11:35:31-05:00:
+PUT /api/products/p3 {"name":"   "} → HTTP 200, name queda "" (nombre vacío aceptado en edición)

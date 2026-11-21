@@ -1,0 +1,14 @@
+﻿Case_ID,Titulo,Prioridad,Ejecutado_por,Fecha,Resultado,Bug_relacionado,Evidencia,Notas
+TC-AUT-01,Login admin exitoso,P0,Playwright (automatizado),2026-11-21,Pass,,"evidencias/paso1_arranque/02_dashboard_admin.png; smoke ""login admin y ver dashboard""",
+TC-SEG-01,Operador no ve controles de gestión,P0,Playwright (automatizado),2026-11-21,Pass,,evidencias/paso1_arranque/08_productos_operador_sin_editar.png; CA-09,
+TC-SEG-02,Operador recibe 403 por API,P0,Playwright (automatizado),2026-11-21,Pass,,CA-09 en reporte Playwright,"POST, PUT y DELETE → 403"
+TC-PRD-01,Crear producto válido,P0,Playwright (automatizado),2026-11-21,Pass,,E2E paso 2 (reporte Playwright),Se usó SKU dinámico E2E-<timestamp>
+TC-MOV-01,Entrada IN suma stock,P0,Playwright (automatizado),2026-11-21,Pass,,E2E paso 3,5 + 20 = 25
+TC-NEG-01,OUT mayor al stock es rechazado,P0,Playwright (automatizado),2026-11-21,Fail,BUG-01,evidencias/paso5_bugs/bug01b_stock_negativo.png,MON-24-04 quedó en -7 sin mensaje
+TC-MOV-03,ADJUST fija el stock al conteo,P0,Playwright (automatizado),2026-11-21,Fail,BUG-02,evidencias/paso5_bugs/bug02b_adjust_suma.png,Quedó 42 en vez de 20
+TC-DSH-02,Valor de inventario = Σ stock × precio,P0,Playwright (automatizado),2026-11-21,Fail,BUG-03,evidencias/paso5_bugs/bug03_valor_inventario.png,"Muestra $ 6.841, esperado $ 6.841.200"
+TC-EXP-01,El CSV incluye todos los productos,P0,Playwright (automatizado),2026-11-21,Fail,BUG-04,evidencias/paso5_bugs/bug04b_csv_descargado.png,3 de 5; faltan MON-24-04 y AUD-BT-05
+TC-NEG-02,SKU duplicado es rechazado,P0,Playwright (automatizado),2026-11-21,Fail,BUG-05,evidencias/paso5_bugs/bug05_sku_duplicado.png,Dos filas CAB-USB-01
+TC-SEG-03,Nombre con HTML no ejecuta código,P0,Playwright (automatizado),2026-11-21,Fail,BUG-08,evidencias/paso5_bugs/bug08a_xss_ejecutado_tras_guardar.png,alert(1) se dispara; también se pudo leer el token
+TC-E2E-01,"Ingreso, salida, alerta y exportación",P0,Playwright (automatizado),2026-11-21,Fail,BUG-04,evidencias/paso7_automation/02_reporte_e2e_pasos.png,Pasos 1-7 pasan; el producto no está en el CSV
+TC-PRD-05,Búsqueda sin distinguir mayúsculas,P1,Playwright (automatizado),2026-11-21,Fail,BUG-07,evidencias/paso5_bugs/bug07b_busqueda_mouse.png,"""mouse"" y ""MOUSE"" → Sin resultados"
