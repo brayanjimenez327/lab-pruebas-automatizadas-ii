@@ -15,9 +15,7 @@
 
 | # | Nombre completo |
 |---|-----------------|
-| 1 | |
-| 2 | |
-| 3 | |
+| 1 | Brayan Jiménez Ospina (trabajo individual) |
 
 ---
 
